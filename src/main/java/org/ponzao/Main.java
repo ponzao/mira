@@ -1,6 +1,7 @@
 package org.ponzao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Main {
@@ -9,7 +10,6 @@ public class Main {
         private final int x;
         private final int y;
         private Node parent;
-        private Node[] children;
 
         public Node(final char c, final int x, final int y) {
             this.c = c;
@@ -29,17 +29,30 @@ public class Main {
         public int getX() {
             return x;
         }
+
+        public boolean isBlocked() {
+            return c == '#';
+        }
+
+        public void setParent(Node parent) {
+            this.parent = parent;
+        }
+
     }
 
     private static class Grid {
         private final Node grid[][];
         private Node start;
         private Node goal;
+        private final int rows;
+        private final int columns;
 
         public Grid(final char[][] charGrid) {
-            this.grid = new Node[charGrid.length][charGrid[0].length];
-            for (int i = 0; i < grid.length; ++i) {
-                for (int j = 0; j < grid[0].length; ++j) {
+            this.rows = charGrid.length;
+            this.columns = charGrid[0].length;
+            this.grid = new Node[rows][columns];
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < columns; ++j) {
                     final Node node = new Node(charGrid[i][j], i, j);
                     if (charGrid[i][j] == 'S')
                         this.start = node;
@@ -56,6 +69,25 @@ public class Main {
 
         public Node getGoal() {
             return goal;
+        }
+
+        public boolean isInGrid(final int row, final int column) {
+            return 0 <= row && 0 <= column && column < columns && row < rows;
+        }
+
+        public Collection<Node> accessibleNeighbors(final Node node) {
+            final Collection<Node> result = new ArrayList<Node>();
+            final int x = node.getX();
+            final int y = node.getY();
+            for (int row = x - 1; row <= x + 1; ++row) {
+                for (int column = y - 1; column <= y + 1; ++column) {
+                    if (!(row == x && column == y) && isInGrid(row, column)
+                            && !grid[row][column].isBlocked())
+                        grid[row][column].setParent(node);
+                    result.add(grid[row][column]);
+                }
+            }
+            return result;
         }
 
         @Override
@@ -78,7 +110,13 @@ public class Main {
                 { '.', 'S', '.', '#', '.', 'G', '.' },
                 { '.', '.', '.', '#', '.', '.', '.' },
                 { '.', '.', '.', '.', '.', '.', '.' }, });
-        List<Node> open = new ArrayList<Node>();
-        open.add(grid.getStart());
+        final List<Node> open = new ArrayList<Node>();
+        final Node start = grid.getStart();
+        open.add(start);
+        final List<Node> closed = new ArrayList<Node>();
+        open.addAll(grid.accessibleNeighbors(start));
+        open.remove(start);
+        closed.add(start);
+        System.out.println(open.size());
     }
 }
