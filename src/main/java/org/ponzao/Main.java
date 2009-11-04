@@ -1,14 +1,17 @@
 package org.ponzao;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static class Node {
+    private static class Node implements Comparable<Node> {
         private final char c;
         private final int x;
         private final int y;
+        private int g;
+        private int h;
+        private int f;
         private Node parent;
 
         public Node(final char c, final int x, final int y) {
@@ -36,6 +39,46 @@ public class Main {
 
         public void setParent(Node parent) {
             this.parent = parent;
+        }
+
+        public Node getParent() {
+            return parent;
+        }
+
+        public void setG(int g) {
+            this.g = g;
+        }
+
+        public int getG() {
+            return g;
+        }
+
+        public void setH(int h) {
+            this.h = h;
+        }
+
+        public int getH() {
+            return h;
+        }
+
+        public int calculateDistance(final Node other) {
+            int result = 0;
+            result = result + Math.abs(this.x - other.x);
+            result = result + Math.abs(this.y - other.y);
+            return 10 * result;
+        }
+
+        public void setF(int f) {
+            this.f = f;
+        }
+
+        public int getF() {
+            return f;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return this.f < o.f ? -1 : f > o.f ? 1 : 0;
         }
 
     }
@@ -75,18 +118,30 @@ public class Main {
             return 0 <= row && 0 <= column && column < columns && row < rows;
         }
 
-        public Collection<Node> accessibleNeighbors(final Node node) {
-            final Collection<Node> result = new ArrayList<Node>();
+        public List<Node> accessibleNeighbors(final Node node) {
+            final List<Node> result = new ArrayList<Node>();
             final int x = node.getX();
             final int y = node.getY();
             for (int row = x - 1; row <= x + 1; ++row) {
                 for (int column = y - 1; column <= y + 1; ++column) {
                     if (!(row == x && column == y) && isInGrid(row, column)
-                            && !grid[row][column].isBlocked())
-                        grid[row][column].setParent(node);
-                    result.add(grid[row][column]);
+                            && !grid[row][column].isBlocked()) {
+                        final Node current = grid[row][column];
+                        current.setParent(node);
+                        if (row != x && column != y) {
+                            current.setG(14 + current.getParent().getG());
+                        } else {
+                            current.setG(10 + current.getParent().getG());
+                        }
+                        current.setH(current.calculateDistance(goal));
+                        current.setF(current.getH() + current.getG());
+                        System.out.println(current.getF());
+                        current.setParent(node);
+                        result.add(current);
+                    }
                 }
             }
+            Collections.sort(result);
             return result;
         }
 
@@ -112,11 +167,11 @@ public class Main {
                 { '.', '.', '.', '.', '.', '.', '.' }, });
         final List<Node> open = new ArrayList<Node>();
         final Node start = grid.getStart();
+        start.setG(0);
         open.add(start);
         final List<Node> closed = new ArrayList<Node>();
         open.addAll(grid.accessibleNeighbors(start));
         open.remove(start);
         closed.add(start);
-        System.out.println(open.size());
     }
 }
