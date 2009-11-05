@@ -7,17 +7,17 @@ import java.util.List;
 public class Main {
     private static class Node implements Comparable<Node> {
         private final char c;
-        private final int x;
-        private final int y;
-        private int g;
-        private int h;
-        private int f;
+        private final int column;
+        private final int row;
+        private Integer g;
+        private Integer h;
+        private Integer f;
         private Node parent;
 
-        public Node(final char c, final int x, final int y) {
+        public Node(final char c, final int row, final int column) {
             this.c = c;
-            this.x = x;
-            this.y = y;
+            this.column = column;
+            this.row = row;
         }
 
         @Override
@@ -25,12 +25,12 @@ public class Main {
             return "" + this.c;
         }
 
-        public int getY() {
-            return y;
+        public int getRow() {
+            return row;
         }
 
-        public int getX() {
-            return x;
+        public int getColumn() {
+            return column;
         }
 
         public boolean isBlocked() {
@@ -45,34 +45,34 @@ public class Main {
             return parent;
         }
 
-        public void setG(int g) {
+        public void setG(Integer g) {
             this.g = g;
         }
 
-        public int getG() {
+        public Integer getG() {
             return g;
         }
 
-        public void setH(int h) {
+        public void setH(Integer h) {
             this.h = h;
         }
 
-        public int getH() {
+        public Integer getH() {
             return h;
         }
 
         public int calculateDistance(final Node other) {
             int result = 0;
-            result = result + Math.abs(this.x - other.x);
-            result = result + Math.abs(this.y - other.y);
+            result = result + Math.abs(this.column - other.column);
+            result = result + Math.abs(this.row - other.row);
             return 10 * result;
         }
 
-        public void setF(int f) {
+        public void setF(Integer f) {
             this.f = f;
         }
 
-        public int getF() {
+        public Integer getF() {
             return f;
         }
 
@@ -94,14 +94,15 @@ public class Main {
             this.rows = charGrid.length;
             this.columns = charGrid[0].length;
             this.grid = new Node[rows][columns];
-            for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < columns; ++j) {
-                    final Node node = new Node(charGrid[i][j], i, j);
-                    if (charGrid[i][j] == 'S')
+            for (int row = 0; row < rows; ++row) {
+                for (int column = 0; column < columns; ++column) {
+                    final Node node = new Node(charGrid[row][column], row,
+                            column);
+                    if (charGrid[row][column] == 'S')
                         this.start = node;
-                    else if (charGrid[i][j] == 'G')
+                    else if (charGrid[row][column] == 'G')
                         this.goal = node;
-                    this.grid[i][j] = node;
+                    this.grid[row][column] = node;
                 }
             }
         }
@@ -114,43 +115,62 @@ public class Main {
             return goal;
         }
 
-        public boolean isInGrid(final int row, final int column) {
+        private boolean isInGrid(final int row, final int column) {
             return 0 <= row && 0 <= column && column < columns && row < rows;
         }
 
+        // TODO Honestly, wtf :D
         public List<Node> accessibleNeighbors(final Node node) {
             final List<Node> result = new ArrayList<Node>();
-            final int x = node.getX();
-            final int y = node.getY();
-            for (int row = x - 1; row <= x + 1; ++row) {
-                for (int column = y - 1; column <= y + 1; ++column) {
-                    if (!(row == x && column == y) && isInGrid(row, column)
+            final int origRow = node.getRow();
+            final int origColumn = node.getColumn();
+            for (int row = origRow - 1; row <= origRow + 1; ++row) {
+                for (int column = origColumn - 1; column <= origColumn + 1; ++column) {
+                    if (!(row == origRow && column == origColumn) && isInGrid(row, column)
                             && !grid[row][column].isBlocked()) {
                         final Node current = grid[row][column];
-                        current.setParent(node);
-                        if (row != x && column != y) {
-                            current.setG(14 + current.getParent().getG());
+                        if (current == goal) {
+                            System.out.println("KICKASS");
+                            System.out.println(1 + origColumn + " " + (1 + origRow));
+                        }
+                        if (row != origRow && column != origColumn) {
+                            if (current.getG() == null) {
+                                current.setG(14 + node.getG());
+                            } else if (current.getG() != null
+                                    && (14 + node.getG()) < current.getG()) {
+                                current.setG(14 + node.getG());
+                            } else {
+                                continue;
+                            }
                         } else {
-                            current.setG(10 + current.getParent().getG());
+                            if (current.getG() == null) {
+                                current.setG(10 + node.getG());
+                            } else if ((10 + node.getG()) < current.getG()) {
+                                current.setG(10 + node.getG());
+                            } else {
+                                continue;
+                            }
                         }
                         current.setH(current.calculateDistance(goal));
                         current.setF(current.getH() + current.getG());
-                        System.out.println(current.getF());
                         current.setParent(node);
                         result.add(current);
                     }
                 }
             }
-            Collections.sort(result);
             return result;
+        }
+
+        public Node get(final int column, final int row) {
+            return grid[row][column];
         }
 
         @Override
         public String toString() {
             String s = "";
-            for (int i = 0; i < grid.length; ++i) {
-                for (int j = 0; j < grid[0].length; ++j) {
-                    s = s + this.grid[i][j];
+            for (int row = 0; row < rows; ++row) {
+                for (int column = 0; column < columns; ++column) {
+                    s = s + this.grid[row][column];
                 }
                 s = s + "\n";
             }
@@ -162,7 +182,7 @@ public class Main {
         final Grid grid = new Grid(new char[][] {
                 { '.', '.', '.', '.', '.', '.', '.' },
                 { '.', '.', '.', '#', '.', '.', '.' },
-                { '.', 'S', '.', '#', '.', 'G', '.' },
+                { '.', 'S', '.', '#', '.', '.', 'G' },
                 { '.', '.', '.', '#', '.', '.', '.' },
                 { '.', '.', '.', '.', '.', '.', '.' }, });
         final List<Node> open = new ArrayList<Node>();
@@ -172,6 +192,75 @@ public class Main {
         final List<Node> closed = new ArrayList<Node>();
         open.addAll(grid.accessibleNeighbors(start));
         open.remove(start);
+        Collections.sort(open);
         closed.add(start);
+
+        System.out.println();
+        Node bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        System.out.println();
+        bestNode = open.get(0);
+        open.addAll(grid.accessibleNeighbors(bestNode));
+        open.remove(bestNode);
+        Collections.sort(open);
+        closed.add(bestNode);
+        
+        
+
+
     }
+
 }
