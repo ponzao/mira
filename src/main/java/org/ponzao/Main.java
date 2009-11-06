@@ -9,9 +9,8 @@ public class Main {
         private final char c;
         private final int column;
         private final int row;
-        private Integer g;
-        private Integer h;
-        private Integer f;
+        private Integer cost;
+        private Integer manhattanDistance;
         private Node parent;
 
         public Node(final char c, final int row, final int column) {
@@ -45,20 +44,20 @@ public class Main {
             return parent;
         }
 
-        public void setG(Integer g) {
-            this.g = g;
+        public void setCost(Integer cost) {
+            this.cost = cost;
         }
 
-        public Integer getG() {
-            return g;
+        public Integer getCost() {
+            return cost;
         }
 
-        public void setH(Integer h) {
-            this.h = h;
+        public void setManhattanDistance(Integer manhattanDistance) {
+            this.manhattanDistance = manhattanDistance;
         }
 
-        public Integer getH() {
-            return h;
+        public Integer getManhattanDistance() {
+            return manhattanDistance;
         }
 
         public int calculateDistance(final Node other) {
@@ -68,17 +67,11 @@ public class Main {
             return 10 * result;
         }
 
-        public void setF(Integer f) {
-            this.f = f;
-        }
-
-        public Integer getF() {
-            return f;
-        }
-
         @Override
         public int compareTo(Node o) {
-            return this.f < o.f ? -1 : f > o.f ? 1 : 0;
+            final int thisSum = manhattanDistance + cost;
+            final int thatSum = o.getManhattanDistance() + o.getCost();
+            return thisSum < thatSum ? -1 : thisSum > thatSum ? 1 : 0;
         }
 
     }
@@ -126,43 +119,38 @@ public class Main {
             final int origColumn = node.getColumn();
             for (int row = origRow - 1; row <= origRow + 1; ++row) {
                 for (int column = origColumn - 1; column <= origColumn + 1; ++column) {
-                    if (!(row == origRow && column == origColumn) && isInGrid(row, column)
+                    if (!(row == origRow && column == origColumn)
+                            && isInGrid(row, column)
                             && !grid[row][column].isBlocked()) {
                         final Node current = grid[row][column];
-                        if (current == goal) {
-                            System.out.println("KICKASS");
-                            System.out.println(1 + origColumn + " " + (1 + origRow));
-                        }
                         if (row != origRow && column != origColumn) {
-                            if (current.getG() == null) {
-                                current.setG(14 + node.getG());
-                            } else if (current.getG() != null
-                                    && (14 + node.getG()) < current.getG()) {
-                                current.setG(14 + node.getG());
+                            if (current.getCost() == null) {
+                                current.setCost(14 + node.getCost());
+                            } else if (current.getCost() != null
+                                    && (14 + node.getCost()) < current
+                                            .getCost()) {
+                                current.setCost(14 + node.getCost());
                             } else {
                                 continue;
                             }
                         } else {
-                            if (current.getG() == null) {
-                                current.setG(10 + node.getG());
-                            } else if ((10 + node.getG()) < current.getG()) {
-                                current.setG(10 + node.getG());
+                            if (current.getCost() == null) {
+                                current.setCost(10 + node.getCost());
+                            } else if ((10 + node.getCost()) < current
+                                    .getCost()) {
+                                current.setCost(10 + node.getCost());
                             } else {
                                 continue;
                             }
                         }
-                        current.setH(current.calculateDistance(goal));
-                        current.setF(current.getH() + current.getG());
+                        current.setManhattanDistance(current
+                                .calculateDistance(goal));
                         current.setParent(node);
                         result.add(current);
                     }
                 }
             }
             return result;
-        }
-
-        public Node get(final int column, final int row) {
-            return grid[row][column];
         }
 
         @Override
@@ -181,13 +169,29 @@ public class Main {
     public static void main(String args[]) {
         final Grid grid = new Grid(new char[][] {
                 { '.', '.', '.', '.', '.', '.', '.' },
-                { '.', '.', '.', '#', '.', '.', '.' },
-                { '.', 'S', '.', '#', '.', '.', 'G' },
-                { '.', '.', '.', '#', '.', '.', '.' },
-                { '.', '.', '.', '.', '.', '.', '.' }, });
+                { '#', '#', '.', '#', '.', '.', '.' },
+                { 'S', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '.', '#', '.', '.', 'G' }, });
+
+        showRoute(findRouteToGoal(grid));
+    }
+
+    private static void showRoute(final Node goal) {
+        System.out.println("Route from goal to start, indexed from 1.");
+        Node current = goal;
+        while (current != null) {
+            System.out.println("Column: " + (current.getColumn() + 1) + ", Row: "
+                    + (1 + current.getRow()));
+            current = current.getParent();
+        }
+    }
+
+    private static Node findRouteToGoal(final Grid grid) {
         final List<Node> open = new ArrayList<Node>();
         final Node start = grid.getStart();
-        start.setG(0);
+        final Node goal = grid.getGoal();
+        start.setCost(0);
         open.add(start);
         final List<Node> closed = new ArrayList<Node>();
         open.addAll(grid.accessibleNeighbors(start));
@@ -195,71 +199,16 @@ public class Main {
         Collections.sort(open);
         closed.add(start);
 
-        System.out.println();
-        Node bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        System.out.println();
-        bestNode = open.get(0);
-        open.addAll(grid.accessibleNeighbors(bestNode));
-        open.remove(bestNode);
-        Collections.sort(open);
-        closed.add(bestNode);
-        
-        
-
+        while (true) {
+            final Node bestNode = open.get(0);
+            open.addAll(grid.accessibleNeighbors(bestNode));
+            if (open.contains(goal)) {
+                return goal;
+            }
+            open.remove(bestNode);
+            Collections.sort(open);
+            closed.add(bestNode);
+        }
 
     }
 
