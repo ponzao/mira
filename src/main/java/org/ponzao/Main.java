@@ -11,6 +11,7 @@ public class Main {
         private final int row;
         private Double cost;
         private Double estimatedDistance;
+
         private Node parent;
 
         public Node(final char c, final int row, final int column) {
@@ -59,6 +60,10 @@ public class Main {
         public Double calculateDistance(final Node other) {
             return Math.sqrt(Math.pow(other.column - this.column, 2)
                     + Math.pow(other.row - this.row, 2));
+        }
+
+        public Double getEstimatedDistance() {
+            return estimatedDistance;
         }
 
         @Override
@@ -139,8 +144,10 @@ public class Main {
                                 continue;
                             }
                         }
-                        current.setEstimatedDistance(current
-                                .calculateDistance(goal));
+                        if (current.getEstimatedDistance() == null) {
+                            current.setEstimatedDistance(current
+                                    .calculateDistance(goal));
+                        }
                         current.setParent(node);
                         result.add(current);
                     }
