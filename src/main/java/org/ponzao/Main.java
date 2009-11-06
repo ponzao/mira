@@ -9,8 +9,8 @@ public class Main {
         private final char c;
         private final int column;
         private final int row;
-        private Integer cost;
-        private Integer manhattanDistance;
+        private Double cost;
+        private Double estimatedDistance;
         private Node parent;
 
         public Node(final char c, final int row, final int column) {
@@ -44,33 +44,27 @@ public class Main {
             return parent;
         }
 
-        public void setCost(Integer cost) {
+        public void setCost(Double cost) {
             this.cost = cost;
         }
 
-        public Integer getCost() {
+        public Double getCost() {
             return cost;
         }
 
-        public void setManhattanDistance(Integer manhattanDistance) {
-            this.manhattanDistance = manhattanDistance;
+        public void setEstimatedDistance(Double estimatedDistance) {
+            this.estimatedDistance = estimatedDistance;
         }
 
-        public Integer getManhattanDistance() {
-            return manhattanDistance;
-        }
-
-        public int calculateDistance(final Node other) {
-            int result = 0;
-            result = result + Math.abs(this.column - other.column);
-            result = result + Math.abs(this.row - other.row);
-            return 10 * result;
+        public Double calculateDistance(final Node other) {
+            return Math.sqrt(Math.pow(other.column - this.column, 2)
+                    + Math.pow(other.row - this.row, 2));
         }
 
         @Override
         public int compareTo(Node o) {
-            final int thisSum = manhattanDistance + cost;
-            final int thatSum = o.getManhattanDistance() + o.getCost();
+            final Double thisSum = estimatedDistance + cost;
+            final Double thatSum = o.estimatedDistance + o.cost;
             return thisSum < thatSum ? -1 : thisSum > thatSum ? 1 : 0;
         }
 
@@ -82,6 +76,8 @@ public class Main {
         private Node goal;
         private final int rows;
         private final int columns;
+        private static final Double DIAGONAL_COST = Math.sqrt(2);
+        private static final Double NORMAL_COST = 1.0;
 
         public Grid(final char[][] charGrid) {
             this.rows = charGrid.length;
@@ -125,25 +121,25 @@ public class Main {
                         final Node current = grid[row][column];
                         if (row != origRow && column != origColumn) {
                             if (current.getCost() == null) {
-                                current.setCost(14 + node.getCost());
+                                current.setCost(DIAGONAL_COST + node.getCost());
                             } else if (current.getCost() != null
-                                    && (14 + node.getCost()) < current
+                                    && (DIAGONAL_COST + node.getCost()) < current
                                             .getCost()) {
-                                current.setCost(14 + node.getCost());
+                                current.setCost(DIAGONAL_COST + node.getCost());
                             } else {
                                 continue;
                             }
                         } else {
                             if (current.getCost() == null) {
-                                current.setCost(10 + node.getCost());
-                            } else if ((10 + node.getCost()) < current
+                                current.setCost(NORMAL_COST + node.getCost());
+                            } else if ((NORMAL_COST + node.getCost()) < current
                                     .getCost()) {
-                                current.setCost(10 + node.getCost());
+                                current.setCost(NORMAL_COST + node.getCost());
                             } else {
                                 continue;
                             }
                         }
-                        current.setManhattanDistance(current
+                        current.setEstimatedDistance(current
                                 .calculateDistance(goal));
                         current.setParent(node);
                         result.add(current);
@@ -191,7 +187,7 @@ public class Main {
         final List<Node> open = new ArrayList<Node>();
         final Node start = grid.getStart();
         final Node goal = grid.getGoal();
-        start.setCost(0);
+        start.setCost(0.0);
         open.add(start);
         final List<Node> closed = new ArrayList<Node>();
         open.addAll(grid.accessibleNeighbors(start));
