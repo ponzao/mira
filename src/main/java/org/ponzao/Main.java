@@ -196,11 +196,9 @@ public class Main {
         final Node goal = grid.getGoal();
         start.setCost(0.0);
         open.add(start);
-        final List<Node> closed = new ArrayList<Node>();
         open.addAll(grid.accessibleNeighbors(start));
         open.remove(start);
         Collections.sort(open);
-        closed.add(start);
 
         while (true) {
             final Node bestNode = open.get(0);
@@ -210,7 +208,6 @@ public class Main {
             }
             open.remove(bestNode);
             Collections.sort(open);
-            closed.add(bestNode);
         }
 
     }
