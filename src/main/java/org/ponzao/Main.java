@@ -181,8 +181,8 @@ public class Main {
         System.out.println("Route from goal to start, indexed from 1.");
         Node current = goal;
         while (current != null) {
-            System.out.println("Column: " + (current.getColumn() + 1) + ", Row: "
-                    + (1 + current.getRow()));
+            System.out.println("Column: " + (current.getColumn() + 1)
+                    + ", Row: " + (1 + current.getRow()));
             current = current.getParent();
         }
     }
