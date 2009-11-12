@@ -26,7 +26,7 @@ public class Main {
 
         @Override
         public String toString() {
-            return "" + this.c;
+            return "" + this.c + " column: " + column + " row: " + row;
         }
 
         public int getRow() {
@@ -172,7 +172,7 @@ public class Main {
                             : NORMAL_COST;
                     if (current.getCost() == null) {
                         // new node
-                        current.setCost(DIAGONAL_COST + node.getCost());
+                        current.setCost(cost + node.getCost());
                     } else if (cost + node.getCost() < current.getCost()) {
                         // improved cost
                         current.setCost(cost + node.getCost());
@@ -205,11 +205,19 @@ public class Main {
 
     public static void main(String args[]) {
         final Grid grid = new Grid(new char[][] {
-                { '.', '.', 'G', '.', '.', '.', '.' },
+                { '.', '.', '.', '.', '.', '.', '.' },
                 { '#', '#', '.', '#', '.', '.', '.' },
                 { 'S', '#', '.', '#', '.', '.', '.' },
                 { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '.', '.', '#', '.', '.', '.' }, });
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '.', '#', '.', '.', 'G' }, });
 
         showRoute(findRouteToGoal(grid));
     }
