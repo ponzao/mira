@@ -75,11 +75,11 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     @Override
     public String toString() {
-        String result = "";
+        String result = "BinaryHeap( ";
         for (E e : array) {
             result = result + e + " ";
         }
-        return result;
+        return result + ")";
     }
 
     public static void main(String args[]) {
