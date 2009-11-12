@@ -8,6 +8,7 @@ public class Main {
         private Double cost;
         private Double estimatedDistance;
         private Node parent;
+        private boolean closed;
 
         public Node(final Node other) {
             this.c = other.c;
@@ -66,10 +67,6 @@ public class Main {
                     + Math.pow(other.row - this.row, 2));
         }
 
-        public Double getEstimatedDistance() {
-            return estimatedDistance;
-        }
-
         @Override
         public int compareTo(Node o) {
             final Double thisSum = estimatedDistance + cost;
@@ -103,6 +100,14 @@ public class Main {
             if (row != other.row)
                 return false;
             return true;
+        }
+
+        public void setClosed(boolean closed) {
+            this.closed = closed;
+        }
+
+        public boolean isClosed() {
+            return closed;
         }
 
     }
@@ -141,6 +146,10 @@ public class Main {
             return goal;
         }
 
+        public Node getNode(final int column, final int row) {
+            return grid[row][column];
+        }
+
         private boolean isInGrid(final int row, final int column) {
             return 0 <= row && 0 <= column && column < columns && row < rows;
         }
@@ -164,7 +173,7 @@ public class Main {
                 for (int column = centerColumn - 1; column <= centerColumn + 1; ++column) {
                     if ((row == centerRow && column == centerColumn)
                             || !isInGrid(row, column)
-                            || grid[row][column].isBlocked()) {
+                            || grid[row][column].isBlocked() || grid[row][column].isClosed()) {
                         continue;
                     }
                     final Node current = new Node(grid[row][column]);
@@ -206,18 +215,39 @@ public class Main {
     public static void main(String args[]) {
         final Grid grid = new Grid(new char[][] {
                 { '.', '.', '.', '.', '.', '.', '.' },
-                { '#', '#', '.', '#', '.', '.', '.' },
-                { 'S', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '.', '.', '#', '.', '.', 'G' }, });
+                { '#', '#', '.', '.', '#', '.', '.', '.' },
+                { 'S', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '#', '.', '.', '.' },
+                { '.', '#', '.', '#', '.', '.', '.', '.' },
+                { '.', '.', '.', '#', '.', '.', '.', '.' },
+                { '.', '#', '.', '#', '#', '.', '.', '.' },
+                { '.', '#', '.', '.', '#', '.', '.', '.' },
+                { '.', '#', '#', '.', '#', '.', '.', '.' },
+                { '.', '.', '#', '#', '#', '.', 'G', '.' } });
 
         showRoute(findRouteToGoal(grid));
     }
@@ -247,6 +277,8 @@ public class Main {
                 return open.peek();
             }
             final Node bestNode = open.remove();
+            grid.getNode(bestNode.getColumn(), bestNode.getRow()).setClosed(
+                    true);
             for (Node node : grid.neighbors(bestNode)) {
                 if (node != null) {
                     open.add(node);
@@ -254,5 +286,4 @@ public class Main {
             }
         }
     }
-
 }
