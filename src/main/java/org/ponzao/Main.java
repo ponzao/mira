@@ -180,10 +180,8 @@ public class Main {
                         // already visited and cost not improved
                         continue;
                     }
-                    if (current.getEstimatedDistance() == null) {
-                        current.setEstimatedDistance(current
-                                .calculateDistance(goal));
-                    }
+                    current.setEstimatedDistance(current
+                            .calculateDistance(goal));
                     current.setParent(node);
                     result[findEmptyIndex(result)] = current;
                 }

@@ -20,7 +20,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
-    public void add(E e) {
+    public void add(E e) { // TODO exception on null value
         if (count == size()) {
             array = Arrays.copyOf(this.array, size() * GROWTH_RATE);
         }
@@ -53,8 +53,8 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     private void heapifyDown(final int parentIndex) {
         final E parent = array[parentIndex];
-        final int childLeftIndex = parentIndex == 0 ? 1 : 2 * parentIndex + 1;
-        final int childRightIndex = parentIndex == 0 ? 2 : 2 * parentIndex + 2;
+        final int childLeftIndex = 2 * parentIndex + 1;
+        final int childRightIndex = 2 * parentIndex + 2;
         if (childLeftIndex >= array.length || childRightIndex >= array.length) {
             return;
         }
