@@ -8,7 +8,6 @@ public class Main {
         private Double cost;
         private Double estimatedDistance;
         private Node parent;
-        private boolean closed;
 
         public Node(final Node other) {
             this.c = other.c;
@@ -102,14 +101,6 @@ public class Main {
             return true;
         }
 
-        public void setClosed(boolean closed) {
-            this.closed = closed;
-        }
-
-        public boolean isClosed() {
-            return closed;
-        }
-
     }
 
     private static class Grid {
@@ -173,10 +164,10 @@ public class Main {
                 for (int column = centerColumn - 1; column <= centerColumn + 1; ++column) {
                     if ((row == centerRow && column == centerColumn)
                             || !isInGrid(row, column)
-                            || grid[row][column].isBlocked() || grid[row][column].isClosed()) {
+                            || grid[row][column].isBlocked()) {
                         continue;
                     }
-                    final Node current = new Node(grid[row][column]);
+                    final Node current = grid[row][column];
                     final double cost = (row != centerRow && column != centerColumn) ? DIAGONAL_COST
                             : NORMAL_COST;
                     if (current.getCost() == null) {
@@ -192,7 +183,7 @@ public class Main {
                     current.setEstimatedDistance(current
                             .calculateDistance(goal));
                     current.setParent(node);
-                    result[findEmptyIndex(result)] = current;
+                    result[findEmptyIndex(result)] = new Node(current);
                 }
             }
 
@@ -277,8 +268,6 @@ public class Main {
                 return open.peek();
             }
             final Node bestNode = open.remove();
-            grid.getNode(bestNode.getColumn(), bestNode.getRow()).setClosed(
-                    true);
             for (Node node : grid.neighbors(bestNode)) {
                 if (node != null) {
                     open.add(node);
