@@ -55,24 +55,23 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         final E parent = array[parentIndex];
         final int childLeftIndex = 2 * parentIndex + 1;
         final int childRightIndex = 2 * parentIndex + 2;
-        if (childLeftIndex >= array.length || childRightIndex >= array.length) {
+        if (childLeftIndex >= array.length && childRightIndex >= array.length) {
             return;
         }
         final E childLeft = array[childLeftIndex];
-        final E childRight = array[childRightIndex];
-        if (childLeft != null || childRight != null) {
-            if (childRight != null && childRight.compareTo(childLeft) == -1) {
-                if (childRight.compareTo(parent) == -1) {
-                    array[childRightIndex] = parent;
-                    array[parentIndex] = childRight;
-                    heapifyDown(childRightIndex);
-                }
-            } else {
-                if (childLeft.compareTo(parent) == -1) {
-                    array[childLeftIndex] = parent;
-                    array[parentIndex] = childLeft;
-                    heapifyDown(childLeftIndex);
-                }
+        final E childRight = (childRightIndex >= array.length) ? null
+                : array[childRightIndex];
+        if (childRight != null && childRight.compareTo(childLeft) == -1) {
+            if (childRight.compareTo(parent) == -1) {
+                array[childRightIndex] = parent;
+                array[parentIndex] = childRight;
+                heapifyDown(childRightIndex);
+            }
+        } else if (childLeft != null) {
+            if (childLeft.compareTo(parent) == -1) {
+                array[childLeftIndex] = parent;
+                array[parentIndex] = childLeft;
+                heapifyDown(childLeftIndex);
             }
         }
     }
