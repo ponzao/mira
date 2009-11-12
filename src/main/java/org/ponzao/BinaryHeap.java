@@ -90,8 +90,26 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         pq.add(6);
         pq.add(4);
         pq.add(-1);
+        pq.add(7);
+        pq.add(9);
+        pq.add(-3);
+        pq.add(6);
+        pq.add(4);
+        pq.add(-1);
         System.out.println(pq);
         pq.remove();
+        pq.remove();
+
+        pq.remove();
+
+        pq.remove();
+
+        pq.remove();
+
+        pq.remove();
+
+        pq.remove();
+
         System.out.println(pq);
         pq.remove();
 

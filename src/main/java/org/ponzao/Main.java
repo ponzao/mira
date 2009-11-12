@@ -11,8 +11,13 @@ public class Main {
         private final int row;
         private Double cost;
         private Double estimatedDistance;
-
         private Node parent;
+
+        public Node(final Node other) {
+            this.c = other.c;
+            this.column = other.c;
+            this.row = other.row;
+        }
 
         public Node(final char c, final int row, final int column) {
             this.c = c;
@@ -113,46 +118,50 @@ public class Main {
             return 0 <= row && 0 <= column && column < columns && row < rows;
         }
 
-        // TODO Honestly, wtf :D
-        public List<Node> accessibleNeighbors(final Node node) {
-            final List<Node> result = new ArrayList<Node>();
-            final int origRow = node.getRow();
-            final int origColumn = node.getColumn();
-            for (int row = origRow - 1; row <= origRow + 1; ++row) {
-                for (int column = origColumn - 1; column <= origColumn + 1; ++column) {
-                    if (!(row == origRow && column == origColumn)
-                            && isInGrid(row, column)
-                            && !grid[row][column].isBlocked()) {
-                        final Node current = grid[row][column];
-                        if (row != origRow && column != origColumn) {
-                            if (current.getCost() == null) {
-                                current.setCost(DIAGONAL_COST + node.getCost());
-                            } else if (current.getCost() != null
-                                    && (DIAGONAL_COST + node.getCost()) < current
-                                            .getCost()) {
-                                current.setCost(DIAGONAL_COST + node.getCost());
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            if (current.getCost() == null) {
-                                current.setCost(NORMAL_COST + node.getCost());
-                            } else if ((NORMAL_COST + node.getCost()) < current
-                                    .getCost()) {
-                                current.setCost(NORMAL_COST + node.getCost());
-                            } else {
-                                continue;
-                            }
-                        }
-                        if (current.getEstimatedDistance() == null) {
-                            current.setEstimatedDistance(current
-                                    .calculateDistance(goal));
-                        }
-                        current.setParent(node);
-                        result.add(current);
-                    }
+        private int findEmptyIndex(final Node[] array) {
+            for (int i = 0; i < array.length; ++i) {
+                if (array[i] == null) {
+                    return i;
                 }
             }
+            throw new RuntimeException();
+        }
+
+        public Node[] neighbors(final Node node) {
+            final Node[] result = new Node[8];
+
+            final int centerRow = node.getRow();
+            final int centerColumn = node.getColumn();
+
+            for (int row = centerRow - 1; row <= centerRow + 1; ++row) {
+                for (int column = centerColumn - 1; column <= centerColumn + 1; ++column) {
+                    if ((row == centerRow && column == centerColumn)
+                            || !isInGrid(row, column)
+                            || grid[row][column].isBlocked()) {
+                        continue;
+                    }
+                    final Node current = grid[row][column];
+                    final double cost = (row != centerRow && column != centerColumn) ? DIAGONAL_COST
+                            : NORMAL_COST;
+                    if (current.getCost() == null) {
+                        // new node
+                        current.setCost(DIAGONAL_COST + node.getCost());
+                    } else if (cost + node.getCost() < current.getCost()) {
+                        // improved cost
+                        current.setCost(cost + node.getCost());
+                    } else {
+                        // already visited and cost not improved
+                        continue;
+                    }
+                    if (current.getEstimatedDistance() == null) {
+                        current.setEstimatedDistance(current
+                                .calculateDistance(goal));
+                    }
+                    current.setParent(node);
+                    result[findEmptyIndex(result)] = current;
+                }
+            }
+
             return result;
         }
 
@@ -196,13 +205,23 @@ public class Main {
         final Node goal = grid.getGoal();
         start.setCost(0.0);
         open.add(start);
-        open.addAll(grid.accessibleNeighbors(start));
+
+        for (Node node : grid.neighbors(start)) {
+            if (node != null) {
+                open.add(node);
+            }
+        }
+
         open.remove(start);
         Collections.sort(open);
 
         while (true) {
             final Node bestNode = open.get(0);
-            open.addAll(grid.accessibleNeighbors(bestNode));
+            for (Node node : grid.neighbors(bestNode)) {
+                if (node != null) {
+                    open.add(node);
+                }
+            }
             if (open.contains(goal)) {
                 return goal;
             }
