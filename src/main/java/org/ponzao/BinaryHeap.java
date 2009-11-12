@@ -15,6 +15,11 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
+    public E peek() {
+        return array[0];
+    }
+
+    @Override
     public void add(E e) {
         if (count == size()) {
             array = Arrays.copyOf(this.array, size() * GROWTH_RATE);
@@ -50,6 +55,9 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         final E parent = array[parentIndex];
         final int childLeftIndex = parentIndex == 0 ? 1 : 2 * parentIndex + 1;
         final int childRightIndex = parentIndex == 0 ? 2 : 2 * parentIndex + 2;
+        if (childLeftIndex >= array.length || childRightIndex >= array.length) {
+            return;
+        }
         final E childLeft = array[childLeftIndex];
         final E childRight = array[childRightIndex];
         if (childLeft != null || childRight != null) {
@@ -80,40 +88,6 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
             result = result + e + " ";
         }
         return result + ")";
-    }
-
-    public static void main(String args[]) {
-        final PriorityQueue<Integer> pq = new BinaryHeap<Integer>();
-        pq.add(7);
-        pq.add(9);
-        pq.add(-3);
-        pq.add(6);
-        pq.add(4);
-        pq.add(-1);
-        pq.add(7);
-        pq.add(9);
-        pq.add(-3);
-        pq.add(6);
-        pq.add(4);
-        pq.add(-1);
-        System.out.println(pq);
-        pq.remove();
-        pq.remove();
-
-        pq.remove();
-
-        pq.remove();
-
-        pq.remove();
-
-        pq.remove();
-
-        pq.remove();
-
-        System.out.println(pq);
-        pq.remove();
-
-        System.out.println(pq);
     }
 
 }

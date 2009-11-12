@@ -65,4 +65,10 @@ public class List<E extends Comparable<E>> implements PriorityQueue<E> {
             this.next = next;
         }
     }
+
+    @Override
+    public E peek() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

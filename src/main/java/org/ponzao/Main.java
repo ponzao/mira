@@ -1,9 +1,5 @@
 package org.ponzao;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class Main {
     private static class Node implements Comparable<Node> {
         private final char c;
@@ -15,8 +11,11 @@ public class Main {
 
         public Node(final Node other) {
             this.c = other.c;
-            this.column = other.c;
+            this.column = other.column;
             this.row = other.row;
+            this.cost = other.cost;
+            this.estimatedDistance = other.estimatedDistance;
+            this.parent = other.parent;
         }
 
         public Node(final char c, final int row, final int column) {
@@ -76,6 +75,34 @@ public class Main {
             final Double thisSum = estimatedDistance + cost;
             final Double thatSum = o.estimatedDistance + o.cost;
             return thisSum < thatSum ? -1 : thisSum > thatSum ? 1 : 0;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + c;
+            result = prime * result + column;
+            result = prime * result + row;
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Node other = (Node) obj;
+            if (c != other.c)
+                return false;
+            if (column != other.column)
+                return false;
+            if (row != other.row)
+                return false;
+            return true;
         }
 
     }
@@ -140,7 +167,7 @@ public class Main {
                             || grid[row][column].isBlocked()) {
                         continue;
                     }
-                    final Node current = grid[row][column];
+                    final Node current = new Node(grid[row][column]);
                     final double cost = (row != centerRow && column != centerColumn) ? DIAGONAL_COST
                             : NORMAL_COST;
                     if (current.getCost() == null) {
@@ -180,11 +207,11 @@ public class Main {
 
     public static void main(String args[]) {
         final Grid grid = new Grid(new char[][] {
-                { '.', '.', '.', '.', '.', '.', '.' },
+                { '.', '.', 'G', '.', '.', '.', '.' },
                 { '#', '#', '.', '#', '.', '.', '.' },
                 { 'S', '#', '.', '#', '.', '.', '.' },
                 { '.', '#', '.', '#', '.', '.', '.' },
-                { '.', '.', '.', '#', '.', '.', 'G' }, });
+                { '.', '.', '.', '#', '.', '.', '.' }, });
 
         showRoute(findRouteToGoal(grid));
     }
@@ -200,35 +227,26 @@ public class Main {
     }
 
     private static Node findRouteToGoal(final Grid grid) {
-        final List<Node> open = new ArrayList<Node>();
+        final PriorityQueue<Node> open = new BinaryHeap<Node>();
         final Node start = grid.getStart();
         final Node goal = grid.getGoal();
         start.setCost(0.0);
-        open.add(start);
-
         for (Node node : grid.neighbors(start)) {
             if (node != null) {
                 open.add(node);
             }
         }
-
-        open.remove(start);
-        Collections.sort(open);
-
         while (true) {
-            final Node bestNode = open.get(0);
+            if (open.peek().equals(goal)) {
+                return open.peek();
+            }
+            final Node bestNode = open.remove();
             for (Node node : grid.neighbors(bestNode)) {
                 if (node != null) {
                     open.add(node);
                 }
             }
-            if (open.contains(goal)) {
-                return goal;
-            }
-            open.remove(bestNode);
-            Collections.sort(open);
         }
-
     }
 
 }
