@@ -17,11 +17,11 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     @Override
     public void add(E e) {
         if (count == size()) {
-            this.array = Arrays.copyOf(this.array, size() * GROWTH_RATE);
+            array = Arrays.copyOf(this.array, size() * GROWTH_RATE);
         }
-        this.array[count] = e;
+        array[count] = e;
         ++count;
-        heapifyUp(count -1);
+        heapifyUp(count - 1);
     }
 
     private void heapifyUp(final int childIndex) {
@@ -36,9 +36,37 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
-    public E remove() {
-        // TODO Auto-generated method stub
-        return null;
+    public E remove() { // TODO empty array?
+        final E removed = array[0];
+        array[0] = array[count - 1];
+        array[count - 1] = null;
+        --count;
+        heapifyDown(0);
+
+        return removed;
+    }
+
+    private void heapifyDown(final int parentIndex) {
+        final E parent = array[parentIndex];
+        final int childLeftIndex = parentIndex == 0 ? 1 : 2 * parentIndex + 1;
+        final int childRightIndex = parentIndex == 0 ? 2 : 2 * parentIndex + 2;
+        final E childLeft = array[childLeftIndex];
+        final E childRight = array[childRightIndex];
+        if (childLeft != null || childRight != null) {
+            if (childRight != null && childRight.compareTo(childLeft) == -1) {
+                if (childRight.compareTo(parent) == -1) {
+                    array[childRightIndex] = parent;
+                    array[parentIndex] = childRight;
+                    heapifyDown(childRightIndex);
+                }
+            } else {
+                if (childLeft.compareTo(parent) == -1) {
+                    array[childLeftIndex] = parent;
+                    array[parentIndex] = childLeft;
+                    heapifyDown(childLeftIndex);
+                }
+            }
+        }
     }
 
     private int size() {
@@ -56,17 +84,17 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     public static void main(String args[]) {
         final PriorityQueue<Integer> pq = new BinaryHeap<Integer>();
+        pq.add(7);
+        pq.add(9);
+        pq.add(-3);
+        pq.add(6);
+        pq.add(4);
+        pq.add(-1);
         System.out.println(pq);
-        pq.add(6);
-        pq.add(9);
-        pq.add(-3);
-        pq.add(101);
-        pq.add(200);
-        pq.add(6);
-        pq.add(9);
-        pq.add(-3);
-        pq.add(101);
-        pq.add(200);
+        pq.remove();
+        System.out.println(pq);
+        pq.remove();
+
         System.out.println(pq);
     }
 
