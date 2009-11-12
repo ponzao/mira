@@ -31,7 +31,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     private void heapifyUp(final int childIndex) {
         final E child = array[childIndex];
-        final int parentIndex = (int) Math.floor(childIndex / 2);
+        final int parentIndex = childIndex / 2;
         final E parent = array[parentIndex];
         if (child.compareTo(parent) == -1) {
             array[parentIndex] = child;
