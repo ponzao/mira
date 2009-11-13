@@ -71,4 +71,10 @@ public class List<E extends Comparable<E>> implements PriorityQueue<E> {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -7,4 +7,6 @@ public interface PriorityQueue<E extends Comparable<E>> {
     E remove();
     
     E peek();
+    
+    int size();
 }
