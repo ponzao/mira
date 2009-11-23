@@ -273,7 +273,6 @@ public class Main {
                 { '.', '#', '.', '.', '#', '.', 'G', '.' },
                 { '.', '#', '#', '.', '#', '.', '.', '.' },
                 { '.', '.', '#', '#', '#', '.', '.', '.' } });
-        
 
         showRoute(findRouteToGoal(grid));
     }
@@ -300,10 +299,11 @@ public class Main {
         }
         while (true) {
             if (open.peek().equals(goal)) {
-            	System.out.println(open.size());
                 return open.peek();
             }
             final Node bestNode = open.remove();
+            // FIXME The following is stupid, it would make more sense to add
+            // them in the collection straight away.
             for (Node node : grid.neighbors(bestNode)) {
                 if (node != null) {
                     open.add(node);
