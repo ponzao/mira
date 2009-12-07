@@ -1,27 +1,11 @@
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.*;
+package org.ponzao;
+
+import java.util.Scanner;
 
 public class InputParser {
     public InputParser() {
 
     }
-//
-//    public String readInput(final DataInputStream input) {
-//        final StringBuffer result = new StringBuffer();
-//
-//        try {
-//            while (input.available() != 0) {
-//                result.append((char)input.readChar());
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        return result.toString();
-//    }
-//
 
     public String readInput() {
         final Scanner in = new Scanner(System.in);
@@ -33,10 +17,5 @@ public class InputParser {
         }
 
         return result.toString();
-    }
-
-    public static void main(String args[]) {
-        final InputParser inputParser = new InputParser();
-        System.out.println(inputParser.readInput());
     }
 }

@@ -7,7 +7,7 @@ import org.junit.Test;
 public class BinaryHeapTest {
 
     @Test
-    public void testAdd_And_Peek_Twice() {
+    public void test_Add_And_Peek_Twice() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         final Integer expected = 10;
         binaryHeap.add(expected);
@@ -16,17 +16,17 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testPeek() {
+    public void test_Peek() {
         fail("Not yet implemented");
     }
 
     @Test
-    public void testAdd() {
+    public void test_Add() {
         fail("Not yet implemented");
     }
 
     @Test
-    public void testAdd_And_Remove() {
+    public void test_Add_And_Remove() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         final Integer expected = 10;
         binaryHeap.add(expected);
@@ -34,12 +34,12 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testRemove() {
+    public void test_Remove() {
         fail("Not yet implemented");
     }
 
     @Test
-    public void testAdd_One_Remove_It_And_Verify_Empty() {
+    public void test_Add_One_Remove_It_And_Verify_Empty() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         final int expected = 0;
         binaryHeap.add(expected);
@@ -48,12 +48,12 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testRemove_From_Empty_Heap_Throws_SOME_EXCEPTION() {
+    public void test_Remove_From_Empty_Heap_Throws_SOME_EXCEPTION() {
         fail("Not yet implemented");
     }
 
     @Test
-    public void testAdd_Several_And_Peek() {
+    public void test_Add_Several_And_Peek() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         final Integer expected = -100;
         binaryHeap.add(14);
@@ -71,7 +71,7 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testAdd_Several_And_Remove_All() {
+    public void test_Add_Several_And_Remove_All() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         final Integer expected = 10000000;
         binaryHeap.add(14);
@@ -99,20 +99,20 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testSize_When_Empty() {
+    public void test_Size_When_Empty() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         assertEquals(0, binaryHeap.size());
     }
 
     @Test
-    public void testSize_When_1() {
+    public void test_Size_When_1() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         binaryHeap.add(100);
         assertEquals(1, binaryHeap.size());
     }
 
     @Test
-    public void testSize_When_2() {
+    public void test_Size_When_2() {
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         binaryHeap.add(100);
         binaryHeap.add(100);
@@ -120,14 +120,14 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testToString_Empty_Heap() {
+    public void test_ToString_Empty_Heap() {
         final String expected = "BinaryHeap( null )";
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         assertEquals(expected, binaryHeap.toString());
     }
 
     @Test
-    public void testToString_One_Value() {
+    public void test_ToString_One_Value() {
         final String expected = "BinaryHeap( 1000 )";
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         binaryHeap.add(1000);
@@ -135,7 +135,7 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testToString_Three_Values() {
+    public void test_ToString_Three_Values() {
         final String expected = "BinaryHeap( -10 12 100 null )";
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         binaryHeap.add(-10);
@@ -145,7 +145,7 @@ public class BinaryHeapTest {
     }
 
     @Test
-    public void testToString_Few_Values() {
+    public void test_ToString_Few_Values() {
         final String expected = "BinaryHeap( -10 12 100 10000 1000 null null null )";
         final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
         binaryHeap.add(-10);

@@ -7,6 +7,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     private static final int GROWTH_RATE = 2;
     private int count;
 
+    @SuppressWarnings("unchecked")
     public BinaryHeap() {
         this.array = (E[]) new Comparable[1]; // TODO this is ugly, can anything
         // be
