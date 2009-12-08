@@ -35,7 +35,7 @@ public class Grid {
         return goal;
     }
 
-    private boolean isInGrid(final int row, final int column) {
+    public boolean isInGrid(final int row, final int column) {
         return 0 <= row && 0 <= column && column < columns && row < rows;
     }
 
@@ -48,7 +48,7 @@ public class Grid {
         throw new RuntimeException();
     }
 
-    public Node[] neighbors(final Node node) {
+    public Node[] getNeighborsOf(final Node node) {
         final Node[] result = new Node[8];
 
         final int centerRow = node.getRow();

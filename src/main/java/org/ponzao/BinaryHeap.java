@@ -9,9 +9,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     @SuppressWarnings("unchecked")
     public BinaryHeap() {
-        this.array = (E[]) new Comparable[1]; // TODO this is ugly, can anything
-        // be
-        // done?
+        this.array = (E[]) new Comparable[1];
         this.count = 0;
     }
 
@@ -21,7 +19,11 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
-    public void add(E e) { // TODO exception on null value
+    public void add(E e) {
+        if (e == null) {
+            throw new NullPointerException(
+                    "Cannot input null values into BinaryHeap!");
+        }
         if (count == array.length) {
             array = Arrays.copyOf(this.array, array.length * GROWTH_RATE);
         }
@@ -42,7 +44,11 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
-    public E remove() { // TODO empty array?
+    public E remove() {
+        if (size() == 0) {
+            throw new NullPointerException(
+                    "Cannot remove from empty BinaryHeap!");
+        }
         final E removed = array[0];
         array[0] = array[count - 1];
         array[count - 1] = null;
@@ -77,8 +83,18 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         }
     }
 
+    @Override
     public int size() {
         return this.count;
+    }
+
+    @Override
+    public void add(final E[] es) {
+        for (E e : es) {
+            if (e != null) {
+                add(e);
+            }
+        }
     }
 
     @Override

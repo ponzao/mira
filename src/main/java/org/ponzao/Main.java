@@ -21,7 +21,7 @@ public class Main {
         final Node start = grid.getStart();
         final Node goal = grid.getGoal();
         start.setCost(0.0);
-        for (Node node : grid.neighbors(start)) {
+        for (Node node : grid.getNeighborsOf(start)) {
             if (node != null) {
                 open.add(node);
             }
@@ -33,11 +33,7 @@ public class Main {
             final Node bestNode = open.remove();
             // FIXME The following is stupid, it would make more sense to add
             // them in the collection straight away.
-            for (Node node : grid.neighbors(bestNode)) {
-                if (node != null) {
-                    open.add(node);
-                }
-            }
+            open.add(grid.getNeighborsOf(bestNode));
         }
     }
 }

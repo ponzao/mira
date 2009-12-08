@@ -56,7 +56,7 @@ public class Node implements Comparable<Node> {
         return cost;
     }
 
-    public void setEstimatedDistance(Double estimatedDistance) {
+    public void setEstimatedDistance(final Double estimatedDistance) {
         this.estimatedDistance = estimatedDistance;
     }
 
@@ -66,7 +66,7 @@ public class Node implements Comparable<Node> {
     }
 
     @Override
-    public int compareTo(Node o) {
+    public int compareTo(final Node o) {
         final Double thisSum = estimatedDistance + cost;
         final Double thatSum = o.estimatedDistance + o.cost;
         return thisSum < thatSum ? -1 : thisSum > thatSum ? 1 : 0;

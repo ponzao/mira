@@ -1,10 +1,19 @@
 package org.ponzao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 public class BinaryHeapTest {
+
+    @Test
+    public void test_Add_And_Peek() {
+        final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
+        final Integer expected = 10;
+        binaryHeap.add(expected);
+        assertEquals(expected, binaryHeap.peek());
+    }
 
     @Test
     public void test_Add_And_Peek_Twice() {
@@ -37,6 +46,39 @@ public class BinaryHeapTest {
     public void test_Remove() {
         fail("Not yet implemented");
     }
+    
+    @Test(expected = NullPointerException.class)
+    public void test_Remove_From_Empty_Heap_Throws_NullPointerException() {
+        final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
+        binaryHeap.remove();
+    }
+    
+    @Test
+    public void test_Add_Array_Of_Nulls() {
+        final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
+        final int expected = 0;
+        final Integer[] array = { null, null, null };
+        binaryHeap.add(array);
+        assertEquals(expected, binaryHeap.size());
+    }
+
+    @Test
+    public void test_Add_Array_Of_Two_Numbers() {
+        final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
+        final int expected = 2;
+        final Integer[] array = { 1, 10 };
+        binaryHeap.add(array);
+        assertEquals(expected, binaryHeap.size());
+    }
+
+    @Test
+    public void test_Add_Array_Of_Two_Numbers_With_Nulls_In_Between() {
+        final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
+        final int expected = 2;
+        final Integer[] array = { 1, null, null, null, 10 };
+        binaryHeap.add(array);
+        assertEquals(expected, binaryHeap.size());
+    }
 
     @Test
     public void test_Add_One_Remove_It_And_Verify_Empty() {
@@ -47,9 +89,10 @@ public class BinaryHeapTest {
         assertEquals(expected, binaryHeap.size());
     }
 
-    @Test
-    public void test_Remove_From_Empty_Heap_Throws_SOME_EXCEPTION() {
-        fail("Not yet implemented");
+    @Test(expected = NullPointerException.class)
+    public void test_Adding_Null_Throws_NullPointerException() {
+        final BinaryHeap<Integer> binaryHeap = new BinaryHeap<Integer>();
+        binaryHeap.add((Integer) null);
     }
 
     @Test

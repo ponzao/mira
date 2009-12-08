@@ -9,4 +9,6 @@ public interface PriorityQueue<E extends Comparable<E>> {
     E peek();
     
     int size();
+    
+    void add(E[] es);
 }
