@@ -18,4 +18,8 @@ public class InputParser {
 
         return result.toString();
     }
+
+    public static void main(String args[]) {
+        System.out.println(new InputParser().readInput());
+    }
 }

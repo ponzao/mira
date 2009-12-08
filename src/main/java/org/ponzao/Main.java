@@ -2,7 +2,7 @@ package org.ponzao;
 
 public class Main {
     public static void main(String args[]) {
-        final Grid grid = new Grid("S...G");
+        final Grid grid = new Grid(new InputParser().readInput());
         showRoute(findRouteToGoal(grid));
     }
 
