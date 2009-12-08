@@ -24,12 +24,12 @@ public class BinaryHeapTest {
         assertEquals(expected, binaryHeap.peek());
     }
 
-    @Test
+//    @Test
     public void test_Peek() {
         fail("Not yet implemented");
     }
 
-    @Test
+//    @Test
     public void test_Add() {
         fail("Not yet implemented");
     }
@@ -42,7 +42,7 @@ public class BinaryHeapTest {
         assertEquals(expected, binaryHeap.remove());
     }
 
-    @Test
+//    @Test
     public void test_Remove() {
         fail("Not yet implemented");
     }
