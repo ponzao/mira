@@ -22,9 +22,13 @@ public class Grid {
                     this.start = node;
                 else if (stringRows[row].charAt(column) == 'G')
                     this.goal = node;
-                this.grid[row][column] = node;
+                setNode(node, row, column);
             }
         }
+    }
+
+    public void setNode(final Node node, final int row, final int column) {
+        this.grid[row][column] = node;
     }
 
     public Node getStart() {
