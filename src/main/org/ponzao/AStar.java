@@ -56,7 +56,6 @@ public class AStar {
         System.out
                 .println("The route is highlighted below with '*' characters.");
         System.out.println(gridWithRoute);
-        System.out.println();
     }
 
 }
