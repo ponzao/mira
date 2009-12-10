@@ -52,6 +52,41 @@ public class Grid {
         return 0 <= row && 0 <= column && column < columns && row < rows;
     }
 
+    // TODO use this is getAcces.... TODO bad name, isMovable? is it really a
+    // bad name? TODO separate the methods
+    public boolean isAccessible(final int fromRow, final int fromColumn,
+            final int toRow, final int toColumn) {
+        // Bottom right case
+        if (fromRow + 1 == toRow
+                && fromColumn + 1 == toColumn
+                && (grid[fromRow][toColumn].isBlocked() || grid[toRow][fromColumn]
+                        .isBlocked())) {
+            return false;
+        }
+        // Bottom left case
+        if (fromRow + 1 == toRow
+                && fromColumn - 1 == toColumn
+                && (grid[fromRow][toColumn].isBlocked() || grid[toRow][fromColumn]
+                        .isBlocked())) {
+            return false;
+        }
+        // Top left case
+        if (fromRow - 1 == toRow
+                && fromColumn - 1 == toColumn
+                && (grid[fromRow][toColumn].isBlocked() || grid[toRow][fromColumn]
+                        .isBlocked())) {
+            return false;
+        }
+        // Top right case
+        if (fromRow - 1 == toRow
+                && fromColumn + 1 == toColumn
+                && (grid[fromRow][toColumn].isBlocked() || grid[toRow][fromColumn]
+                        .isBlocked())) {
+            return false;
+        }
+        return true;
+    }
+
     private int findEmptyIndex(final Node[] array) {
         for (int i = 0; i < array.length; ++i) {
             if (array[i] == null) {
@@ -72,7 +107,8 @@ public class Grid {
             for (int column = centerColumn - 1; column <= centerColumn + 1; ++column) {
                 if ((row == centerRow && column == centerColumn)
                         || !isInGrid(row, column)
-                        || grid[row][column].isBlocked()) {
+                        || grid[row][column].isBlocked()
+                        || !isAccessible(centerRow, centerColumn, row, column)) {
                     continue;
                 }
                 final Node current = grid[row][column];
