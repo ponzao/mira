@@ -3,8 +3,6 @@ package org.ponzao;
 public class AStar {
     private final Grid grid;
     private final PriorityQueue<Node> open;
-    private Grid gridWithRoute;
-    private int totalAmountOfNodes = 0;
 
     public AStar(final Grid grid, final PriorityQueue<Node> open) {
         this.grid = grid;
@@ -12,7 +10,7 @@ public class AStar {
     }
 
     // TODO Refactor
-    public void findRoute() {
+    public Route findRoute() {
         final Node start = grid.getStart();
         final Node goal = grid.getGoal();
 
@@ -35,9 +33,9 @@ public class AStar {
             current = open.remove();
         }
 
-        // TODO refactor
-        gridWithRoute = new Grid(grid.toString());
+        final Grid gridWithRoute = new Grid(grid.toString());
         Node curr = goal;
+        int totalAmountOfNodes = 0;
         while (curr != null) {
             ++totalAmountOfNodes;
             if (!curr.equals(start) && !curr.equals(goal)) {
@@ -47,15 +45,7 @@ public class AStar {
             curr = curr.getParent();
         }
 
-        System.out
-                .println("Nodes on route (start and goal calculated into this): "
-                        + totalAmountOfNodes
-                        + ", total cost: "
-                        + goal.getCost());
-        System.out.println();
-        System.out
-                .println("The route is highlighted below with '*' characters.");
-        System.out.println(gridWithRoute);
+        return new Route(goal.getCost(), totalAmountOfNodes, gridWithRoute);
     }
 
 }
