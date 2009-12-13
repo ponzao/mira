@@ -4,12 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
 
-\setlength{\textwidth}{120mm}
-\setlength{\textheight}{220mm}
-\setlength{\parindent}{0mm}
-\setlength{\parskip}{3mm plus0.5mm minus0.5mm}
-
-\title{Johdatus tietojenkäsittelytieteeseen}
+\title{A*-algoritmi}
 \author{Vesa Marttila\\
 \texttt{vesa.marttila@cs.helsinki.fi}}
 \date{\today}
@@ -25,128 +20,75 @@
 \newpage
 
 \section{Johdanto}
-Tämä essee on kirjoitettu syksyllä 2009 Tomi Pasasen luennoiman Johdatus Tekoälyyn -kurssin pohjalta. Teksti on koottu luentomuistiinpanojeni ja Internetistä löytyvien artikkelien pohjalta, joten tämän vuoksi tekstiä kannattaa lukea hyvin kriittisesti.
+A*-algoritmia käytetään löytämään lyhin reitti lähtösolmusta loppusolmuun verkossa. Toisin kuin esimerkiksi Dijkstran algoritmin, A* hyödyntää heuristiikkaa, eli käytännössä tekee arvion siitä, että miten pitkä matka on kustakin solmusta maalisolmuun.
 
-\section{Mitä tekoäly on pähkinänkuoressa?}
-Wikipediasta: ''Sana tekoäly tarkoittaa sellaisia tietokoneen toimintoja, jotka jäljittelevät ihmiselle tyypillisiä älykkyyttä vaativia toimintoja.'' En ole itse koskaan erityisesti pitänyt tästä määritelmästä, koska ihminen ei ole ainoa olento joka kykenee älykkääseen toimintaan. Käytännössäkin älykkäitä järjestelmiä halutaan rakentaa ratkaisemaan tiettyjen kohdealueiden ongelmia, eikä oikeasti ajattelevia ja mukautuvia olentoja. 
+Prioriteettijono on tärkein tietorakenne tälle algoritmille. Prioriteettijonon paras alkio valitaan aina seuraavaksi kokeiltavaksi solmuksi.
 
-\section{Tietämyksen esittäminen}
-Ihmisen tapa käsitellä tietoa ei itselleni ole mitenkään selviö, mutta karvahattu päässä omakohtaiseen kokemukseen perustuen me käsittelemme tietoa erilaisilla tavoilla, joten ei ole mikään ihme, että me olemme pyrkineet esittämään tietoa mitä erinäisin tavoin myös tietokoneelle. 
+Jos algoritmi ei ole aikaisemmin tuttu, suosittelen tutustumaan Wikipediassa olevaan artikkeliin http://en.wikipedia.org/wiki/A*\_search\_algorithm. Selitys on varmasti kattavampi ja parempi kuin mitä tähän viitsin raapustaa.
 
-Luennolla esiteltiin ongelma, jossa on 3x3 shakkilauta neljällä ratsulla varustettuna. Jokaista nappulaa saa siirtää vain kerran ja kaikkia pitää pystyä siirtämään vuoronperään. Ihmiselle, joka tietää shakin säännöt tämä ongelma on triviaali, ja esitystapa on täydellinen, mutta tietokoneelle tilanne on eri. Vaihtoehtoinen, koneystävällisempi tapa on esittää lauta ja nappulat siirtymäkaaviona, joka itselle ei ihan ensisilmäyksellä aukene. Tämän esimerkki osoittin hyvin sen, että sillä on suuri merkitys miten tietämystä esitetään.
+\section{Käyttöohje}
+Ohjelman toiminta on taattu laitoksen Linux-koneissa, mutta vaatii kuitenkin Apache Mavenin asentamisen ennalta, käyn tämän luonnollisesti tässä läpi.
 
-\subsection{Tietämysmallin arviointi}
-Tietämysmallia voidaan arvioida sen ilmaisuvoiman, toiminnallisuuden, tehokkuuden ja läpinäkyvyyden pohjalta. 
+\subsection{Apache Maven}
+Hae ensiksi Apache Maven paketti.
+\begin{verbatim}
+cd ~
+wget http://mirror.eunet.fi/apache/maven/binaries/apache-maven-2.2.1-bin.tar.gz
+\end{verbatim}
+Ja pura se seuraavalla komennolla.
+\begin{verbatim}
+tar xvzf apache-maven-2.2.1-bin.tar.gz
+\end{verbatim}
+Nyt voit siirtää kyseisen ohjelman haluaamasi paikkaan, asetella polkuja ja niin edelleen, mutta tämä ei ole tarpeen.
 
-\subsection{Looginen esitystapa}
-Yksi ensimmäisistä tavoista pyrkiä esittämään tietämystä tietokoneelle sopivassa muodossa on looginen esitys. Luennolla esiteltiin propositiologiikka ja predikaattilogiikka. 
+\subsection{A*-ohjelman asennus}
+Jos et ole purkanut jo pakettia, niin tee se nyt.
+\begin{verbatim}
+tar xvzf tiraha_vesa_marttila.tar.gz
+\end{verbatim}
+Tai vaihtoehtoisesti kloonaa git repository.
+\begin{verbatim}
+git clone git://github.com/ponzao/mira.git
+\end{verbatim}
+Toimit kummalla tavalla tahansa, niin nyt sinulla pitäisi työkansioosi ilmestynyt uusi kansio nimeltä ''mira''. Ohjelman kääntäminen tapahtuu kirjoittamalla komentoriville seuraavaa.
+\begin{verbatim}
+cd mira
+~/apache-maven-2.2.1/bin/mvn package
+\end{verbatim}
+Tämä olettan, että asensit Mavenin kotihakemistoosi. Tämän jälkeen sinulla pitäisi olla uusi kansio nimeltä ''target''. Täällä kansiossa on JAR-paketti nimeltä ''mira-1.0-SNAPSHOT.jar''.
 
-\subsubsection{Propositiologiikka}
-Propositiologiikassa on vahvassa roolissa lauseet ja niiden totuusarvojen laskeminen. Esimerkiksi, jos meillä on lause ''Ulkona sataa ja minulla on nälkä'' tämä voidaan esittää myös muodossa $P \wedge Q$, jossa P on ''ulkona sataa'' ja Q on ''minulla on nälkä''. Tämä lause on tosi jos ja vain jos P on tosi ja Q on tosi.
+\subsection{Suoritus}
+JAR-paketti suoritetaan samalla tavalla kuin yleensä eli seuraavasti.
+\begin{verbatim}
+java -jar target/mira-1.0-SNAPSHOT.jar
+\end{verbatim}
+Tällöin ohjelma lukee standardisyöttövirrasta merkkejä kunnes vastaan tulee tiedostonloppu, joka useimmissa ympäristöissä taitaa olla ctrl+d. Jos haluaa antaa ohjelmalle parametrina tiedoston, se tapahtuu seuraavasti.
+\begin{verbatim}
+java -jar target/mira-1.0-SNAPSHOT.jar < tiedoston_nimi.map
+\end{verbatim}
+Ohjelma lopuksi tulostaa käyttäjälle optimaalisen reitin '*'-merkittyinä, kuinka monta solmua käydään reitillä läpi ja mikä on reitin pituus. Jos ohjelma saa virheellisiä syötteitä, ei löydä reittiä tai muuta vastaavaa, niin käyttäjälle tulostetaan virheilmoitus.
 
-\subsubsection{Predikaattilogiikka}
-Predikaattilogiikka on taas uusien asioiden päättelyä aikaisempien tietojen pohjalta. Esimerkiksi jos tiedetään yleisesti pätevän, että jos x on y:n isä tai äiti, on x tällöin y:n vanhempi. Sama formalisoituna $(\forall x) (\forall y) father(x, y) \vee mother(x, y) \to parent(x, y)$. Jos vielä tiedetään, että Jeff on Virgilin ja Alanin isä, formaalisti $father(Jeff, Virgil) \wedge father(Jeff, Alan)$, josta voidaan päätellä, että Jeff on molempien poikien vanhempi, formaalisti $parent(Jeff, Virgil) \wedge parent(Jeff, Alan)$.
+\subsection{Kartan formaatti}
+Parametrina annetun kartan jokaisen rivin tulee olla yhtä pitkä ja niiden tulee loppua rivinvaihtoon. Jos näitä ei ole noudatettu, seuraamukset ovat odottamattomat.
 
-\subsection{Verkkoesitys}
-Verkkoesitys muistuttaa pitkälti olio-ohjelmoinnista tuttua perinnöllisyyttä. Esimerkkinä luennolla annettiin verkko jossa näytetään mistä ja millä ominaisuuksilla rottweiler-rotu voidan periyttää. Rottweiler esimerkiksi perii koiralta haukkumisen, neljä jalkaa, mutta rottweilerilla ei ole häntää. Kyseisestä rodusta voidaan sitten luoda instansseja esimerkiksi Musti tai Moppe. Verkolla voi tietysti esittää muitakin olio-ohjelmoinnista tuttuja käsitteitä kuten omistamista, rajapintoja ym.
+\section{Toteutus}
 
-\subsection{Tietämyksen hankinta}
-Tietämyksen hankkiminen on yksi ongelma, josta tekoälyn kehittäminen kärsii. Tähän ongelmaan on yritys nimeltä Cycorp pyrkinyt löytämään ratkaisua. Yrityksen kotisivuilla voi kuka tahansa pelata peliä, joka kerää tietoa maailmasta. Valitettavasti tämän yrityksen motiivit taitavat olla täysin kaupalliset, joten muut eivät ihan suoraan pääse nauttimaan heidän kehitystyöstä.
+\subsection{Prioriteettijono}
+Prioriteettijono on toteutettu käyttäen binäärikekoa. Keko on talletettu kasvavaan taulukkoon. Kasvuvauhti on määritelty aina tuplautuvaksi eli, kun keon taulukko tulee täyteen, luodaan uusi taulukko joka on tuplasti suurempi ja sinne kopioidaan alkuperäisen taulukon tiedot. Taulukkoa ei missään vaiheessa pienennetä.
 
-\section{Päättely}
+Binäärikeko tarjoaa lisäyksen ja poiston O(log n), sekä kurkkauksen O(1). Taulukon kopiointi on tietenkin raskaahko operaatio, mutta en halunnut varata järjetöntä määrää muistia joka kerta ihan vain sen vuoksi, että sinne saatetaan tallettaa paljon tietoa.
 
-\subsection{Mitä päättely on?}
-Päättely on ajattelua, joka tavallisesti etenee oletuksista johtopäätökseen. Luennolla päättely jaettiin deduktiiviseen, abduktiiviseen ja induktiiviseen päättelyyn, vaikka Wikipedia tunnisti muutaman muunkin.
+\subsection{A*-algoritmi}
+Algoritmin toteutuksessa ei suuria kummallisuuksia ole. Ehkä ainoana erikoisuutena se, että jos solmulle on laskettu jo arvo ja sen arvo paranee toisella vierailulla, niin sitä ei muuteta suoraan kekoon vaan sinne luodaan kyseisestä solmusta kopio. Tämä sen vuoksi, että jos keossa olevan solmun arvoa muutetaan niin keko menee rikki. Vaihtoehtona tälle kopioinnille olisi tietenkin korjata keossa olevan alkion sijaintia, mutta en löytänyt mitään järkevää tapaa tehdä tätä. Käyttämäni ratkaisu on prosessoinnin osalta parempi, mutta muistin osalta huonompi.
 
-\subsubsection{Deduktiivinen päättely}
-Deduktiivisessa päättelyssä tosista premisseistä seuraa välttämättä tosi johtopäätös. Wikipediassa on esimerkkinä seuraava:
-\begin{enumerate}
-\item Kaikki ihmiset ovat kuolevaisia (Premissi 1)
-\item Sokrates on ihminen (Premissi 2)
-\item Sokrates on kuolevainen (Johtopäätös)
-\end{enumerate}
+Toinen tekijä jossa varmasti voi löytyä eroja on käytetty heuristiikka. Päädyin käyttämään linnuntietä, koska se ei ainakaan missään nimessä yliarvioi annettua etäisyyttä, mitä esimerkiksi Manhattan tekee.
 
-\subsubsection{Abduktiivinen päättely}
-Abduktiivinen päättely on päättelyä, jossa pyritään löytämään paras saatavilla oleva selitys. Esimerkki:
-\begin{itemize}
-\item Jos olet pitkään ulkona auringossa, niin rusketut.
-\item Kesällä paistaa usein aurinko (nykyään valitettavan harvoin, kirj. huom.)
-\item Niina on usein rannalla.
-\item Näin ruskettuneen Niinan rannalla (kesäkuussa).
-\item Johtopäätös: Ulkona paistaa aurinko.
-\end{itemize}
-Tässä päättelyssä ensimmäinen on yleisesti hyväksytty fakta ja muut ovat empiiristä todistusaineistoa. Päättely on rationaalinen ja todennäköinen, vaikka on mahdollista, että Niina on ollut solariumissa juuri ennen rannalle tuloa, mutta tämä on meille tuntematon tekijä.
+\section{Testaus}
+Lähdekoodien mukana kansiossa src/test/java on 6 integraatiotestimetodia paketissa org.ponzao.it ja 72 yksikkötestimetodia paketissa org.ponzao. Yksikkötestit kattavat 92.7\% ohjelmakoodista. Ainoastaan InputParser ja Main eivät ole katettuja yksikkötestien osalta, koska näissä ei ollut sellaista logiikkaa joka tälle sovellukselle olisi kriittistä. Jos haluat ajaa itse testit ne ajetaan seuraavalla komennolla.
 
-\subsubsection{Induktiivinen päättely}
-Induktiivissa päättelyssä yksittäisistä havainnoista tehdään yleistys tai teoria. Esimerkiksi jos olen luennolla, jossa on pelkkiä miehiä teen johtopäätöksen, että kaikki opiskelijat ovat miehiä. Tämä yleistyshän hajoaa käsiin, kun kävelee salista ulos, mutta tämä on kuitenkin induktiivisen päättelyn perusajatus.
-
-
-\subsubsection{Sumea päättely}
-Sumea päättely oli mielenkiintoista, koska se oli tähänastisista menetelmistä ehkä lähimpänä ihmisen suorittamaa päättelyä. Aikaisempiin menetelmiin verrattuna sumeassa päättelyssä ymmärretään, että maailma ei ole täysin mustavalkoinen, vaan vastaus löytyy usein harmaan eri sävyistä. Käytännössä tämä tarkoittaa sitä, että totuusarvo vaihtelee välillä $[0...1]$.
-
-\section{Etsintä}
-
-\subsection{Ongelmatyyppejä}
-Etsintää käytetään, kun halutaan ratkaista millä siirtymillä päästään haluttuun ratkaisuun. Halutun ratkaisun ei tarvitse aina olla optimaalisin, koska joskus tarpeeksi hyvä riittää. Ongelmatyyppiin vaikuttaa myös se, että onko mukana vastustajaa vai ei. Vastustajan mukana ollessa ongelma on epädeterministinen, koska hänen toimet vaikuttavat peliin tavalla jota ei välttämättä pystytä täysin ennakoimaan.
-
-\subsection{Etsintätilan rakenne}
-
-\subsubsection{Generoi ja testaa}
-Generoiminen ja generoitujen tuloksien testaaminen, kunnes löytyy oikea, toimii tietyissä tilanteissa hyvin. Se on ensinnäkin usein helppo toteuttaa ja pienissä ongelmissa se ei välttämättä vie edes kauheasti aikaa. Siirryttäessä vaikeampiin ongelmiin, kuten esimerkiksi shakkiin ja siinä useiden siirtojen eteenpäin ennakointia, ei voida enää generoida kaikkia mahdollisuuksia, koska tietokoneiden vääntö ei yksinkertaisesti riitä.
-
-\subsubsection{Puu}
-Puu on yksi yleisimmistä ja intuitiivisimmasta tavoista mallintaa ongelmaa. Moneen ongelmaan löytyyksin yksinkertainen ja riittävän tehokas ratkaisu soveltamalla puuta ja siihen vielä karsintaa. Tämä käytännössä tarkoittaa sitä, että juuren alapuolella on kaikki aloitusvaihtoehdot, joista valitaan ensimmäinen. Ensimmäisen alapuolella on kaikki seuraavat vaihtoehdot, joista valitaan myös ensimmäinen. Jos seuraamalla aina tätä ensimmäistä vaihtoehtoa päädytään oikeaan tulokseen niin hyvä niin. Usein kuitenkaan näin ei käy, vaan toteamme ratkaisun jossain vaiheessa vääräksi. Tällöin emme jatka enää etenemistä, vaan palaamme puussa ylöspäin siihen solmuun, jolla on vielä tutkimattomia lapsia, ja siirrytään johonkin näistä. Näin jatketaan kunnes kaikki puun solmujen tarjoamat ratkaisut on todettu vääriksi tai löydetti toimiva ratkaisu.
-
-Puuhun voi myös tarvittaessa soveltaa haarautumiskerrointa ja syvyysrajoitteita. Eli ei lähdetä heti tutkimaan kaikkia mahdollisia vaihtoehtoja.
-
-\subsubsection{Verkko}
-Ongelmasta voidaa myös rakentaa verkko, josta etsitään sopivin reitti haluttuun lopputulokseen. Verkossa tapahtuvaan reitinhakuun kannattaa valita parhaiten sopiva algoritmi.
-
-%\subsection{Heuristinen etsintä}
-Heuristisessa etsinnässä ei haeta parasta ratkaisua, riittävän hyvä riittää. Heuristiset algoritmit ovat käytännössä ainoa järkevä tapa ratkaista monia vaikeita ongelmia, kuten esimerkiksi kauppamatkustajan ongelma.
-
-%\section{Koneoppiminen}
-%TODO
-
-%\section{Pelien pelaaminen}
-Peleissä tekoäly arvioi tietyt siirrot ja tilanteet tietyin pistein. Tietystä siirrosta esimerkiksi vastustaja saa muutaman plussapisteen. Vastustajan plussapisteet ovat usein hänelle tietenkin miinusta. Näiden pohjalta tekoäly pyrkii tekemään ratkaisunsa. Se miten tilanteet pisteytetään ei aina ole mitenkään selvää, koska esimerkiksi shakissa ratsun ja lähetin arvo vaihtelee pelin edetessä.
-
-\section{Luonnollisen kielen ymmärtäminen}
-Luonnollisen kielen ymmärtäminen voidaan jakaa viiteen eri tasoon, jotka ovat seuraavat:
-\begin{enumerate}
-\item Lauseopillinen taso (syntaksi): jotkin sanat voivat muodostaa järkevän kokonaisuuden, toiset eivät (''I hit the man with the hammer''). 
-\item Sanastollinen taso (leksikaalinen): sanoilla voi olla useita merkityksiä (''I went to the bank'').
-\item Viittauksien epäselvyys (referentiaalinen): lauseiden väliset viittaukset (''Fred hit Joe because he liked Harry'').
-\item Semanttinen: lauseella voi olla useita merkityksiä (''He saw her duck'').
-\item Pragmaattinen: miten lause tulkitaan kyseisessä kontekstissa (''Dinosaurs have been extinct for a long time'').
-\end{enumerate}
-
-\subsection{Lauseopillinen jäsentäminen}
-Lauseopillisella jäsentämisellä tarkoitetaan yksittäisten sanojen yhdistämistä suuremmiksi kokonaisuuksiksi. Esimerkiksi lause ''who belongs to a union'' koostuu viidestä sanasta, joiden tyypit ovat järjestyksessä relatiivipronomini, verbi, prepositio, epämääräinen artikkeli ja substantiivi. Artikkeli ja substantiivi muodostavat substantiviilauseen. Prepositio ja substantiivilause muodostavat prepositiolauseen. Verbi ja prepositiolause muodostavat yhdessä verbilauseen ja lopulta relatiivipronomini ja verbilause muodostavat koko tutkittavan lauseen.
-
-Tälläisten sääntöjen luominen mahdollistaa periaatteessa sen, että mikä tahansa lauseen jäsen voidaan vaihtaa toiseen vastaavan. Puoltavana esimerkkinä voin antaa esimerkiksi lauseen ''who belongs to the team'', jossa viimeinen substantiivilause on korvattu toisella. Vastaesimerkkinä taas löytyy lause ''who belongs to the mirror'', jossa ehkä jossain tilanteessa voisi olla järkeä semanttisessa mielessä, mutta ei nyt ainakaan heti tule itselle mieleen (jos keksit kontekstin jossa tämä toimii hyvin niin lähetä sähköpostia).
-
-Lauseopillinen jäsentäminen ja sen myötä sääntöjen luominen on myös hyvin kieliriippuvaista, koska kielet eroavat rakenteiltaan toisistaan hyvinkin paljon. On kieliä, joissa on prepositioita, toisissa taas postpositioita, lauserakenteetkin ovat tietyissä kielissä hyvin tiukkoja, toisissa kuten esimerkiksi suomessa hyvin löysiä, vaikkakin jälkimmäisen kieliryhmän ''ritaripuhetyyli'' kerää varmasti huvittuneita katseita.
-
-Selkeästi pelkällä kieliopilla ei pystytä ymmärtämään luonnollista kieltä. Yksi tapa yrittää korjata tämä on lisätä lauserakenteisiin semanttista merkitystä luomalla relaatioita asioiden välille. Esimerkiksi tietyt lauseen osat vaativat kuulumista tietyntyyppiseen relaation aikaisempien ehtojen nojalla.
-
-Luonnollisen kielen ymmärtäminen on mielenkiintoinen ongelma, mutta myös hyvin vaikea. Maailman suosituin hakukone ei pyri ''ymmärtämään'' tekstin sisältöä, toiset vähemmän suositut yrittävät.
-
-\section{Konenäkö}
-
-\subsection{Vaiheet}
-Konenäön vaiheet voidaan jakaa neljään eri osa-alueeseen: digitalisointi ja signaalin prosessointi, reunojen ja alueiden löytäminen, objektien tunnistus sekä viimeisenä kuvan ymmärtäminen.
-
-\subsubsection{Digitalisointi}
-Digitalisointi käytännössä tehdään jakamalla kuva ruudukkoon, ja antamalla jokaiselle ruudulle jokin arvo. Se miten suuri ruudukko ja millä skaalalla arvoja annetaan tietenkin vaikuttaa siihen miten paljon asioita jatkossa pystytään erottamaan kuvasta.
-
-\subsubsection{Alueiden muodostaminen}
-Alueiden muodostaminen tapahtuu yhdistämällä ensin samanarvoiset alueet yhdeksi isommaksi. Tämän jälkeen yhdistetään vielä pienemmät alueet isompiin siten, että katsotaan mitä vieressä olevaa aluetta lähimpänä lukuarvoltaan alue on.
-
-\section{Robotiikka}
-Robotiikassa on tärkeää pystyä tarjoamaan robotille tietoa ympäröivästä maailmasta. Tämä tieto on joko annettua tai robotin itsensä havainnoimaa anturien avulla, usein kuitenkin molempia.
-
-\section{Filosofiset ja sosiologiset kysymykset}
-En pidä hienoimpiakaan automatisoituja laitteita minään muuna kuin itsessään typerinä laitteina, jotka ihminen on luonut täyttämään tietyn tehtävän. Ihminen ja mikä tahansa muu eläin syntyessään omaa mahdollisuuden tehdä ihan mitä itse haluaa, kone on aina luotu tiettyä tarkoitusta varten. Tässä ei kuitenkaan ole mielestäni mitään pahaa, maailmassa on jo yksi olento joka tekee kaikkea älytöntä, ei varmaan tarvita toista?
+\begin{verbatim}
+cd ~/mira  
+~/apache-maven-2.2.1/bin/mvn test
+\end{verbatim}
 
 \end{document}
