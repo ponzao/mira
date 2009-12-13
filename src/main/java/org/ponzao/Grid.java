@@ -96,6 +96,7 @@ public class Grid {
         throw new RuntimeException();
     }
 
+    // TODO UNIT TESTS
     // FIXME I am a "bit" ugly
     public Node[] getAccessibleNeighborsWithValuesUpdatedOf(final Node node) {
         final Node[] result = new Node[8];
@@ -143,5 +144,15 @@ public class Grid {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Just calls toString, this is done due to problems with PowerMock
+     * overriding the toString presentation thus not allowing me to mock that
+     * call.
+     * 
+     */
+    public String asString() {
+        return this.toString();
     }
 }

@@ -3,9 +3,9 @@ package org.ponzao;
 public class Route {
     private final double totalCost;
     private final int nodes;
-    private final Grid route;
+    private final String route;
 
-    public Route(final double totalCost, final int nodes, final Grid route) {
+    public Route(final double totalCost, final int nodes, final String route) {
         this.totalCost = totalCost;
         this.nodes = nodes;
         this.route = route;
@@ -19,7 +19,7 @@ public class Route {
         return nodes;
     }
 
-    public Grid getRoute() {
+    public String getRoute() {
         return route;
     }
 }

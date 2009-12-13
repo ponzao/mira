@@ -9,7 +9,6 @@ public class AStar {
         this.open = open;
     }
 
-    // TODO Refactor
     public Route findRoute() {
         final Node start = grid.getStart();
         final Node goal = grid.getGoal();
@@ -26,14 +25,16 @@ public class AStar {
                 }
             }
             if (open.size() == 0) {
-                // TODO Replace me with a custom Exception
                 throw new RuntimeException(
                         "There is no route from start to goal in the given map!");
             }
             current = open.remove();
         }
+        return createResultRoute(start, goal);
+    }
 
-        final Grid gridWithRoute = new Grid(grid.toString());
+    private Route createResultRoute(final Node start, final Node goal) {
+        final Grid gridWithRoute = new Grid(grid.asString());
         Node curr = goal;
         int totalAmountOfNodes = 0;
         while (curr != null) {
@@ -45,7 +46,8 @@ public class AStar {
             curr = curr.getParent();
         }
 
-        return new Route(goal.getCost(), totalAmountOfNodes, gridWithRoute);
+        return new Route(goal.getCost(), totalAmountOfNodes, gridWithRoute
+                .asString());
     }
 
 }
