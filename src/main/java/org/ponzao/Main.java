@@ -1,5 +1,11 @@
 package org.ponzao;
 
+/**
+ * Main class.
+ * 
+ * @author vesa
+ * 
+ */
 public class Main {
     public static void main(String args[]) {
         final AStar as = new AStar(new Grid(new InputParser().readInput()),

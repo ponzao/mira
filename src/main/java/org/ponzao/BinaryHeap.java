@@ -2,6 +2,12 @@ package org.ponzao;
 
 import java.util.Arrays;
 
+/**
+ * Binary heap implementation of a priority queue. Overriden methods from
+ * PriorityQueue are documented in that interface.
+ * 
+ * @author vesa
+ */
 public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     private E[] array;
     private static final int GROWTH_RATE = 2;
@@ -32,6 +38,10 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         heapifyUp(count - 1);
     }
 
+    /**
+     * Corrects an object's position upwards in the heap. This is used when
+     * adding objects into heap.
+     */
     private void heapifyUp(final int childIndex) {
         final E child = array[childIndex];
         final int parentIndex = childIndex / 2;
@@ -58,6 +68,10 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         return removed;
     }
 
+    /**
+     * Corrects an object's position downwards in the heap. This is used when
+     * removing objects from heap.
+     */
     private void heapifyDown(final int parentIndex) {
         final E parent = array[parentIndex];
         final int childLeftIndex = 2 * parentIndex + 1;

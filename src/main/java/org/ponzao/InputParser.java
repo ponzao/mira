@@ -2,9 +2,15 @@ package org.ponzao;
 
 import java.util.Scanner;
 
+/**
+ * Used to read input from the standard input. Not unit tested due to System not
+ * being mockable.
+ * 
+ * @author vesa
+ * 
+ */
 public class InputParser {
     public InputParser() {
-
     }
 
     public String readInput() {
