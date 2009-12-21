@@ -22,6 +22,8 @@ public class InputParser {
             sb.append('\n');
         }
 
+        in.close();
+
         return sb.toString();
     }
 }
